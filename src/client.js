@@ -39,8 +39,8 @@ class Client {
       .receive("error", resp => { console.log("Unable to join", resp) })
   }
 
-  fire(fireAction) {
-    this.channel.push("fire", {})
+  fire(x, y, rotation, fireAction) {
+    this.channel.push("fire", {x, y, rotation})
     this.fireAction = fireAction
   }
 }
