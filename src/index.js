@@ -1,19 +1,19 @@
 import Phaser from 'phaser'
 
 import Client from './client'
+import LiveGameScene from './live_game_scene'
 import PlainBullet from './plain_bullet'
 
 
 const gameWidth = 500
 const gameHeight = 300
 
-class LiveGameScene extends Phaser.Scene {
+class LiveGameScene_DEPRECIATED extends Phaser.Scene {
   constructor() {
     super({key: 'LiveGameScene', active: true})
   }
 
   init() {
-    this.client = new Client()
     this.cameras.main.roundPixels = true
     this.cameras.main.setBounds(0, 0, gameWidth, gameHeight)
   }
@@ -33,30 +33,49 @@ class LiveGameScene extends Phaser.Scene {
     groundGroup.create(140, 130, 'ground').refreshBody()
     groundGroup.create(170, 130, 'ground').refreshBody()
     groundGroup.create(210, 140, 'ground').refreshBody()
-
-    this.tank = this.physics.add.sprite(10, 10, 'tank')
-    this.tank.setCollideWorldBounds(true)
-    this.tank.setBounce(0.2)
-    this.physics.add.collider(this.tank, groundGroup)
+    this.groundGroup = groundGroup
 
     this.bullets = this.add.group({classType: PlainBullet, maxSize: 1, runChildUpdate: true})
+    this.otherPlayers = this.physics.add.group()
+    this.physics.add.collider(this.otherPlayers, this.groundGroup)
 
     this.cursors = this.input.keyboard.createCursorKeys()
     this.fireButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
     this.fireButton.addListener('down', this.fire, this)
 
+    this.client = new Client(this)
   }
 
   update() {
     if (this.cursors.left.isDown) {
-      this.tank.setVelocityX(-60);
-      this.tank.setAngle(-1)
+      this.client.move(this.tank.x, this.tank.y, result => {
+        this.tank.setVelocityX(-60);
+        this.tank.setAngle(-1)
+      })
     } else if (this.cursors.right.isDown) {
-      this.tank.setVelocityX(60);
-      this.tank.setAngle(1)
+      this.client.move(this.tank.x, this.tank.y, result => {
+        this.tank.setVelocityX(60);
+        this.tank.setAngle(1)
+      })
     } else {
-      this.tank.setVelocityX(0);
+      if (this.tank) {
+        this.tank.setVelocityX(0);
+      }
     }
+  }
+
+  addOtherPlayer(player) {
+    this.otherPlayers.create(player.x, player.y, 'tank')
+      .setCollideWorldBounds(true)
+      .setBounce(0.2)
+  }
+
+  addPlayer(data) {
+    this.tank = this.physics.add.sprite(data.x, data.y, 'tank')
+    this.tank.setCollideWorldBounds(true)
+    this.tank.setBounce(0.2)
+    this.physics.add.collider(this.tank, this.groundGroup)
+    this.otherPlayers.add(this.tank)
   }
 
   fire() {
