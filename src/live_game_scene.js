@@ -21,7 +21,7 @@ class LiveGameScene extends Phaser.Scene {
   }
 
   create() {
-    this.playerGroup = this.physics.add.group()
+    this.players = {}
 
     this.groundGroup = this.physics.add.staticGroup()
     this.groundGroup.create(20, 100, 'ground')
@@ -33,22 +33,50 @@ class LiveGameScene extends Phaser.Scene {
     this.groundGroup.create(210, 140, 'ground')
 
     this.client = new PlayerClient(this)
+    this.cursors = this.input.keyboard.createCursorKeys()
   }
 
-  update() {}
+  update() {
+    if (this.cursors.left.isDown) {
+      this.client.trackMove(this.player.x, this.player.y)
+      this.player.setVelocityX(-60);
+      this.player.setAngle(-1)
+    } else if (this.cursors.right.isDown) {
+      this.client.trackMove(this.player.x, this.player.y)
+      this.player.setVelocityX(60);
+      this.player.setAngle(1)
+    } else {
+      if (this.player) {
+        this.player.setVelocityX(0);
+      }
+    }
+  }
 
-  addPlayer({x, y, id}) {
+  addPlayer({x, y, id}, clientPlayerId) {
     const player = this.physics.add.sprite(x, y, 'tank')
-    this.playerGroup.add(player)
     this.physics.add.collider(player, this.groundGroup)
+    this.players[id] = player
     player.playerId = id
     player.setCollideWorldBounds(true)
     player.setBounce(0.2)
+
+    if (id === clientPlayerId) {
+      this.player = player
+    }
   }
 
   removePlayer(id) {
-    const player = this.playerGroup.getChildren().find(player => player.playerId === id)
-    this.playerGroup.remove(player, true, true)
+    this.players[id].destroy()
+    delete this.players[id]
+  }
+
+  movePlayer({id, x, y}) {
+    const player = this.players[id]
+    if (player) {
+      player.setPosition(x, y)
+    } else {
+      console.error('Unable to find player!')
+    }
   }
 }
 
