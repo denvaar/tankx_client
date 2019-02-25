@@ -15,10 +15,8 @@ class PlayerClient {
     const playerId = urlParams.get('player_id')
     const gameId = urlParams.get('game_id') || "game_1"
 
-    const x = Math.floor(Math.random() * 400) + 50
-    const y = 0
-    this.channel = this.socket.channel("game:lobby",
-      {player_id: playerId, x, y, game_id: gameId})
+    this.channel = this.socket.channel(`game:tanks:play:${gameId}`,
+      {player_id: playerId})
 
     this.channel.join().receive("ok", resp => {
       console.log("Joined successfully", resp)
@@ -28,13 +26,21 @@ class PlayerClient {
 
     this.channel.on("player_joined", payload => {
       console.log("New player online:", payload)
-      this.scene.addPlayer(payload)
+      this.scene.addPlayer(payload, playerId)
     })
 
     this.channel.on("player_left", payload => {
       console.log("A player has left:", payload)
       this.scene.removePlayer(payload.id)
     })
+
+    this.channel.on("move", payload => {
+      this.scene.movePlayer(payload)
+    })
+  }
+
+  trackMove(x, y) {
+    this.channel.push("move", {x, y})
   }
 }
 
