@@ -1,6 +1,6 @@
 const path = require('path')
+const config = require('./src/config')
 
-console.log(__dirname)
 module.exports = {
   entry: {
     app: './src/index.js'
@@ -11,7 +11,8 @@ module.exports = {
     publicPath: '/'
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    host: config.clientHost
   },
   resolve: {
     extensions: ['.mjs', '.js']
