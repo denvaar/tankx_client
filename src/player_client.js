@@ -1,8 +1,11 @@
 import { Socket } from 'phoenix'
 
+import { serverHost, serverPort } from './config'
+
+
 class PlayerClient {
   constructor(scene) {
-    this.socket = new Socket("ws:localhost:4000/socket", {
+    this.socket = new Socket(`ws:${serverHost}:${serverPort}/socket`, {
       params: {
         token: window.userToken
       }

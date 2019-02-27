@@ -1,20 +1,23 @@
 import Phaser from 'phaser'
 
+import { debug, gameWidth, gameHeight } from './config'
 import LiveGameScene from './live_game_scene'
-import PlainBullet from './plain_bullet'
 
+console.log(window.devicePixelRatio)
 
 const config = {
-  type: Phaser.AUTO,
-  width: 500,
-  height: 300,
+  type: Phaser.CANVAS,
+  width: gameWidth,
+  height: gameHeight,
   parent: 'game-container',
+  resolution: window.devicePixelRatio,
+  pixelArt: true,
   scene: [LiveGameScene],
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {y: 200},
-      debug: true
+      debug: debug
     }
   }
 }
