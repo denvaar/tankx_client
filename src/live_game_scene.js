@@ -44,13 +44,12 @@ class LiveGameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
 
     this.input.keyboard.on('keydown-SPACE',  () => { this.fireShot({ x: this.barrel.x, y: this.barrel.y }) }, this)
-    // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).addListener('keydown', () => { this.fireShot({ x: this.barrel.x, y: this.barrel.y }) }, this)
     this.bullet = this.physics.add.sprite(0, 0, 'bullet')
   }
 
   update() {
     if (this.barrel) {
-      this.barrel.setPosition(this.player.x, this.player.y - 2)
+      this.barrel.setPosition(this.player.x, this.player.y)
     }
     if (this.cursors.left.isDown) {
       this.client.trackMove(this.player.x, this.player.y)
@@ -118,8 +117,13 @@ class LiveGameScene extends Phaser.Scene {
   }
 
   fireShot({x, y}) {
+    const power = 200
     this.bullet.setPosition(this.barrel.x, this.barrel.y)
-    this.physics.velocityFromRotation(this.barrel.rotation, 200, this.bullet.body.velocity)
+    const velocity = new Phaser.Math.Vector2(
+      15 * Math.cos(this.barrel.rotation - Math.PI / 2),
+      15 * Math.sin(this.barrel.rotation - Math.PI / 2)
+    );
+    this.physics.velocityFromRotation(this.barrel.rotation, power, this.bullet.body.velocity)
   }
 }
 

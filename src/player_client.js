@@ -40,10 +40,26 @@ class PlayerClient {
     this.channel.on("move", payload => {
       this.scene.movePlayer(payload)
     })
+
+    this.channel.on("fire", payload => {
+      this.scene.fireShot(payload)
+    })
+
+    this.channel.on("explode", payload => {
+      this.scene.killPlayer(payload)
+    })
   }
 
-  trackMove(x, y) {
-    this.channel.push("move", {x, y})
+  trackMove(x, y, velocity, barrelRotation) {
+    this.channel.push("move", {x, y, velocity, barrel_rotation: barrelRotation})
+  }
+
+  fire(rotation, power, velocity) {
+    this.channel.push("fire", {rotation, power, velocity})
+  }
+
+  explode(playerId) {
+    this.channel.push("explode", {player_id: playerId})
   }
 }
 
