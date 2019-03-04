@@ -68,7 +68,10 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     // FIXME: mostly works, but can cause tank to appear flipped incorrectly
     let velocity = 0
     if (this.cursors.space.isDown) {
-      this.power++
+      if (this.power <= 200) {
+        this.power++
+        this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(this.power)
+      }
     }
 
     if (this.cursors.left.isDown) {
@@ -122,5 +125,6 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     this.scene.physics.velocityFromRotation(this.barrel.rotation, this.power * 3, bullet.body.velocity)
     this.client.fire(this.barrel.rotation, this.power * 3, bullet.body.velocity)
     this.power = 0
+    this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(this.power)
   }
 }

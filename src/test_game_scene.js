@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 
+import PlayerInfoScene from './player_info_scene'
 import Bullet from './bullet'
 import PlayerClient from './player_client'
 import Tank from './tank'
@@ -14,7 +15,7 @@ export default class TestGameScene extends Phaser.Scene {
   init() {
     this.cameras.main.roundPixels = true
     this.cameras.main.setBounds(0, 0, gameWidth, gameHeight)
-    this.cameras.main.setBackgroundColor('rgba(232, 232, 232, 1)')
+    this.cameras.main.setBackgroundColor('rgba(105, 105, 105, 1)')
   }
 
   preload() {
@@ -24,6 +25,9 @@ export default class TestGameScene extends Phaser.Scene {
 
   create() {
     this.client = new PlayerClient(this)
+
+    this.scene.bringToTop('PlayerInfoScene')
+    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.client.playerId)
 
     this.anims.create({
       key: 'horiz',

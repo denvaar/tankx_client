@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import { debug, gameWidth, gameHeight } from './config'
 import LiveGameScene from './live_game_scene'
 import TestGameScene from './test_game_scene'
+import PlayerInfoScene from './player_info_scene'
 
 const config = {
   type: Phaser.CANVAS,
@@ -11,14 +12,15 @@ const config = {
   parent: 'game-container',
   resolution: window.devicePixelRatio,
   pixelArt: true,
-  scene: [TestGameScene],
+  scene: [PlayerInfoScene, TestGameScene],
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {y: 200},
       debug: debug
     }
-  }
+  },
+  render: { pixelArt: true, antialias: false }
 }
 
 const game = new Phaser.Game(config)
