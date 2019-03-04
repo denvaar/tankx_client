@@ -16,6 +16,7 @@ class PlayerClient {
     // TODO: Move somewhere else probably
     const urlParams = new URLSearchParams(window.location.search)
     const playerId = urlParams.get('player_id')
+    this.playerId = playerId
     const gameId = urlParams.get('game_id') || "game_1"
 
     this.channel = this.socket.channel(`game:tanks:play:${gameId}`,
