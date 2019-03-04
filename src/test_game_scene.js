@@ -18,8 +18,8 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('barrel', '../assets/barrel.png')
-    this.load.spritesheet('tank', '../assets/blue-tank.png', { frameWidth: 32, frameHeight: 20 })
+    this.load.image('barrel', 'assets/barrel.png')
+    this.load.spritesheet('tank', 'assets/blue-tank.png', { frameWidth: 32, frameHeight: 20 })
   }
 
   create() {
@@ -68,7 +68,7 @@ export default class TestGameScene extends Phaser.Scene {
       delete this.otherPlayers[id]
       console.log(`player ${id} has been killed`)
     } else {
-      console.log('you\'re dead')
+      window.alert('You\'re dead')
       this.player.explode()
     }
   }

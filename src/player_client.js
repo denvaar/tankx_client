@@ -5,7 +5,7 @@ import { serverHost, serverPort } from './config'
 
 class PlayerClient {
   constructor(scene) {
-    this.socket = new Socket(`ws:${serverHost}:${serverPort}/socket`, {
+    this.socket = new Socket(`wss:${serverHost}/socket`, {
       params: {
         token: window.userToken
       }

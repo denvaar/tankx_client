@@ -1,6 +1,6 @@
 const debug = false
 const clientHost = 'localhost'
-const serverHost = 'localhost'
+const serverHost = 'obscure-tor-90137.herokuapp.com'
 const gameWidth = 500
 const gameHeight = 300
 
