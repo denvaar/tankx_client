@@ -24,10 +24,11 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   create() {
-    this.client = new PlayerClient(this)
+    if (!this.client) {
+      this.client = new PlayerClient(this)
+    }
 
     this.scene.bringToTop('PlayerInfoScene')
-    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.client.playerId)
 
     this.anims.create({
       key: 'horiz',
@@ -48,7 +49,6 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   bulletHitTank(bullet, tank, id) {
-    console.log('boom!')
     bullet.destroy()
     this.player.client.explode(id)
   }
@@ -66,18 +66,24 @@ export default class TestGameScene extends Phaser.Scene {
 
   killPlayer({id}) {
     const explodingPlayer = this.otherPlayers[id]
+    let winner = true
 
     if (explodingPlayer) {
       this.otherPlayers[id].explode()
       delete this.otherPlayers[id]
-      console.log(`player ${id} has been killed`)
     } else {
-      console.log('you\'re dead')
       this.player.explode()
+      winner = false
     }
+    this.scene.start('GameOverScene', {
+      active: true,
+      visible: true,
+      didWin: winner
+    })
   }
 
   addPlayer({x, y, id}, clientId) {
+    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.client.playerId)
     if (clientId === id) {
       this.player = new Tank({ scene: this, x, y, key: 'tank' }, this.client)
     } else {

@@ -4,6 +4,7 @@ import { debug, gameWidth, gameHeight } from './config'
 import LiveGameScene from './live_game_scene'
 import TestGameScene from './test_game_scene'
 import PlayerInfoScene from './player_info_scene'
+import GameOverScene from './game_over_scene'
 
 const config = {
   type: Phaser.CANVAS,
@@ -12,7 +13,7 @@ const config = {
   parent: 'game-container',
   resolution: window.devicePixelRatio,
   pixelArt: true,
-  scene: [PlayerInfoScene, TestGameScene],
+  scene: [TestGameScene, PlayerInfoScene, GameOverScene],
   physics: {
     default: 'arcade',
     arcade: {

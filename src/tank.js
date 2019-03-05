@@ -38,13 +38,13 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     })
 
     if (this.client) {
-      this.cursors = this.scene.input.keyboard.createCursorKeys();
+      this.cursors = this.scene.input.keyboard.createCursorKeys()
       this.rotateUpKey = this.scene.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.UP
-      );
+      )
       this.rotateDownKey = this.scene.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.DOWN
-      );
+      )
       this.scene.input.keyboard.on('keyup-SPACE',  () => {
         this.fireShot({ x: this.barrel.x, y: this.barrel.y })
       }, this)
@@ -109,6 +109,7 @@ export default class Tank extends Phaser.GameObjects.Sprite {
 
   explode() {
     this.barrel.destroy()
+    this.scene.scene.remove('PlayerInfoScene')
     this.destroy()
   }
 
