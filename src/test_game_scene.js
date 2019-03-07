@@ -9,10 +9,24 @@ import { gameWidth, gameHeight } from './config'
 
 export default class TestGameScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'TestGameScene', active: true })
+    super({ key: 'TestGameScene', active: false })
   }
 
-  init() {
+  init(data) {
+    console.log('init', data)
+    this.client = data.client
+    this.player = data.player
+    this.opponent = data.opponent
+
+    // hacky...
+    this.client.callbacks = {
+      ...this.client.callbacks,
+      movePlayer: this.movePlayer.bind(this),
+      fireShot: this.fireShot.bind(this),
+      killPlayer: this.killPlayer.bind(this)
+    }
+
+    this.scene.launch('PlayerInfoScene')
     this.cameras.main.roundPixels = true
     this.cameras.main.setBounds(0, 0, gameWidth, gameHeight)
     this.cameras.main.setBackgroundColor('rgba(105, 105, 105, 1)')
@@ -24,10 +38,8 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   create() {
-    this.client = new PlayerClient(this)
-
     this.scene.bringToTop('PlayerInfoScene')
-    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.client.playerId)
+    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.player.id)
 
     this.anims.create({
       key: 'horiz',
@@ -35,7 +47,20 @@ export default class TestGameScene extends Phaser.Scene {
       frameRate: 10
     })
 
+    const { x, y } = this.player
+    this.player = new Tank({ scene: this, x, y, key: 'tank' }, this.client)
+
     this.otherPlayers = {}
+    const otherPlayer = new Tank({ scene: this, x: this.opponent.x, y: this.opponent.y, key: 'tank' }, null)
+
+    this.physics.add.overlap(
+      this.player.bulletGroup,
+      otherPlayer,
+      (bullet, tank) => this.bulletHitTank(bullet, tank, this.opponent.id),
+      null,
+      this
+    )
+    this.otherPlayers[this.opponent.id] = otherPlayer
   }
 
   update() {
@@ -77,22 +102,7 @@ export default class TestGameScene extends Phaser.Scene {
     }
   }
 
-  addPlayer({x, y, id}, clientId) {
-    if (clientId === id) {
-      this.player = new Tank({ scene: this, x, y, key: 'tank' }, this.client)
-    } else {
-      const otherPlayer = new Tank({ scene: this, x, y, key: 'tank' }, null)
-      this.physics.add.overlap(
-        this.player.bulletGroup,
-        otherPlayer,
-        (bullet, tank) => this.bulletHitTank(bullet, tank, id),
-        null,
-        this
-      )
-      this.otherPlayers[id] = otherPlayer
-    }
-  }
-
+  // TODO: I think I need to use this
   removePlayer(id) {
     this.otherPlayers[id].barrel.destroy()
     this.otherPlayers[id].destroy()

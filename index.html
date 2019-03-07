@@ -3,9 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Tanks</title>
+  <style>
+    .aux-section {
+      width: 500px;
+      padding-bottom: 5px;
+      padding-top: 5px;
+      font-family: monospace;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .aux-section input {
+      width: 70%;
+      padding: 5px;
+    }
+
+    .btn {
+      font-family: monospace;
+      padding: 7px;
+      margin: 5px;
+      border: none;
+      background: #2196F3;
+      color: #fff;
+      border-radius: 2px;
+    }
+  </style>
 </head>
 <body>
   <div id='game-container'></div>
+  <div class="aux-section">
+    <input type="text" readonly="true" id='game-name' />
+    <br/>
+    <button class="btn" id='copy-btn'>Copy invite URL</button>
+  </div>
   <script src="bundle.js" type="text/javascript"></script>
 </body>
 </html>
