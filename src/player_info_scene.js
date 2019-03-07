@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 
 export default class PlayerInfoScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'PlayerInfoScene', active: true})
+    super({ key: 'PlayerInfoScene', active: false})
   }
 
   init() {

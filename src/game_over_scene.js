@@ -47,16 +47,9 @@ export default class GameOverScene extends Phaser.Scene {
       )
       continueMessage.setX(gameWidth / 2 - continueMessage.width / 2)
 
-      this.startKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.ENTER
-      )
+      this.input.keyboard.on('keydown_ENTER', event => {
+        this.scene.start('TestGameScene')
+      })
     }, 2000)
-  }
-
-  update() {
-    if (this.startKey && this.startKey.isDown) {
-      this.scene.launch('PlayerInfoScene')
-      this.scene.start('TestGameScene')
-    }
   }
 }

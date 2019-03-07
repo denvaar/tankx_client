@@ -75,7 +75,7 @@ export default class TestGameScene extends Phaser.Scene {
       this.player.explode()
       winner = false
     }
-    this.scene.start('GameOverScene', {
+    this.scene.launch('GameOverScene', {
       active: true,
       visible: true,
       didWin: winner
@@ -83,7 +83,15 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   addPlayer({x, y, id}, clientId) {
-    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.client.playerId)
+    this.scene.launch('PlayerInfoScene')
+    // const s = this.scene.launch('PlayerInfoScene')
+    // console.log(s)
+    // if (!this.scene.get('PlayerInfoScene')) {
+    //   this.scene.manager.add('PlayerInfoScene', true)
+    // }
+    //this.scene.get('PlayerInfoScene')
+    //  .setPlayerName(this.client.playerId)
+
     if (clientId === id) {
       this.player = new Tank({ scene: this, x, y, key: 'tank' }, this.client)
     } else {
