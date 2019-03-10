@@ -35,6 +35,7 @@ export default class TestGameScene extends Phaser.Scene {
     this.load.image('barrel', '../assets/barrel.png')
     this.load.spritesheet('tank', '../assets/blue-tank.png', { frameWidth: 32, frameHeight: 20 })
     this.load.spritesheet('shot', '../assets/shot.png', { frameWidth: 30, frameHeight: 30 })
+    this.load.spritesheet('explosion', '../assets/explosion.png', { frameWidth: 32, frameHeight: 30 })
   }
 
   create() {
@@ -90,14 +91,19 @@ export default class TestGameScene extends Phaser.Scene {
   killPlayer({id}) {
     const explodingPlayer = this.otherPlayers[id]
 
-    this.scene.stop('PlayerInfoScene')
     if (explodingPlayer) {
       this.otherPlayers[id].explode()
       delete this.otherPlayers[id]
-      this.scene.start('GameOverScene', {gameResult: 'win', player: id})
+      setTimeout(() => {
+        this.scene.stop('PlayerInfoScene')
+        this.scene.start('GameOverScene', {gameResult: 'win', player: id})
+      }, 1000)
     } else {
       this.player.explode()
-      this.scene.start('GameOverScene', {gameResult: 'loose', player: Object.keys(this.otherPlayers)[0]})
+      setTimeout(() => {
+        this.scene.stop('PlayerInfoScene')
+        this.scene.start('GameOverScene', {gameResult: 'loose', player: Object.keys(this.otherPlayers)[0]})
+      }, 1000)
     }
   }
 
