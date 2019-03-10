@@ -20,6 +20,15 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     this.initImage()
     this.scene.add.existing(this)
     this.body.setCollideWorldBounds(true)
+
+    this.shot = this.scene.add.sprite(10, 10, 'shot')
+    this.scene.anims.create({
+      key: 'shot',
+      frames: this.scene.anims.generateFrameNumbers('shot', { start: 1, end: 4 }),
+      hideOnComplete: true,
+      frameRate: 20
+    })
+    this.shot.setVisible(false)
   }
 
   initImage() {
@@ -120,6 +129,9 @@ export default class Tank extends Phaser.GameObjects.Sprite {
       x: offset.x,
       y: offset.y
     })
+    this.shot.setPosition(offset.x, offset.y)
+    this.shot.play('shot')
+    this.shot.setVisible(true)
     this.bulletGroup.add(bullet)
     this.scene.cameras.main.shake(20, 0.005)
     this.scene.physics.velocityFromRotation(this.barrel.rotation, this.power * 3, bullet.body.velocity)

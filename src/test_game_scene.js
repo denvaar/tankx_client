@@ -34,6 +34,7 @@ export default class TestGameScene extends Phaser.Scene {
   preload() {
     this.load.image('barrel', '../assets/barrel.png')
     this.load.spritesheet('tank', '../assets/blue-tank.png', { frameWidth: 32, frameHeight: 20 })
+    this.load.spritesheet('shot', '../assets/shot.png', { frameWidth: 30, frameHeight: 30 })
   }
 
   create() {
@@ -117,6 +118,9 @@ export default class TestGameScene extends Phaser.Scene {
       x: offset.x,
       y: offset.y
     })
+    player.shot.setPosition(offset.x, offset.y)
+    player.shot.play('shot')
+    player.shot.setVisible(true)
     this.cameras.main.shake(20, 0.005)
     this.physics.velocityFromRotation(player.barrel.rotation, power, bullet.body.velocity)
   }
