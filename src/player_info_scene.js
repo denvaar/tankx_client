@@ -6,7 +6,8 @@ export default class PlayerInfoScene extends Phaser.Scene {
     super({ key: 'PlayerInfoScene'})
   }
 
-  init() {
+  init(data) {
+    this.playerName = data.playerName
   }
 
   preload() {
@@ -18,11 +19,11 @@ export default class PlayerInfoScene extends Phaser.Scene {
   }
 
   create() {
-    this.playerName = this.add.bitmapText(
+    this.playerNameDisplay = this.add.bitmapText(
       15,
       15,
       'font',
-      '',
+      this.playerName,
       8
     )
 
@@ -46,9 +47,5 @@ export default class PlayerInfoScene extends Phaser.Scene {
 
   updateFirePower(firePower) {
     this.renderPowerBar(firePower)
-  }
-
-  setPlayerName(name) {
-    this.playerName.setText(name)
   }
 }

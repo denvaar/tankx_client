@@ -13,7 +13,6 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   init(data) {
-    console.log('init', data)
     this.client = data.client
     this.player = data.player
     this.opponent = data.opponent
@@ -26,7 +25,7 @@ export default class TestGameScene extends Phaser.Scene {
       killPlayer: this.killPlayer.bind(this)
     }
 
-    this.scene.launch('PlayerInfoScene')
+    this.scene.launch('PlayerInfoScene', {playerName: this.player.id})
     this.cameras.main.roundPixels = true
     this.cameras.main.setBounds(0, 0, gameWidth, gameHeight)
     this.cameras.main.setBackgroundColor('rgba(105, 105, 105, 1)')
@@ -39,7 +38,6 @@ export default class TestGameScene extends Phaser.Scene {
 
   create() {
     this.scene.bringToTop('PlayerInfoScene')
-    this.scene.manager.getScene('PlayerInfoScene').setPlayerName(this.player.id)
 
     this.anims.create({
       key: 'horiz',
@@ -73,7 +71,6 @@ export default class TestGameScene extends Phaser.Scene {
   }
 
   bulletHitTank(bullet, tank, id) {
-    console.log('boom!')
     bullet.destroy()
     this.player.client.explode(id)
   }
@@ -92,13 +89,14 @@ export default class TestGameScene extends Phaser.Scene {
   killPlayer({id}) {
     const explodingPlayer = this.otherPlayers[id]
 
+    this.scene.stop('PlayerInfoScene')
     if (explodingPlayer) {
       this.otherPlayers[id].explode()
       delete this.otherPlayers[id]
-      console.log(`player ${id} has been killed`)
+      this.scene.start('GameOverScene', {gameResult: 'win', player: id})
     } else {
-      console.log('you\'re dead')
       this.player.explode()
+      this.scene.start('GameOverScene', {gameResult: 'loose', player: Object.keys(this.otherPlayers)[0]})
     }
   }
 
