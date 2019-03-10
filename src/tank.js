@@ -21,6 +21,15 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this)
     this.body.setCollideWorldBounds(true)
 
+    this.explosion = this.scene.add.sprite(10, 10, 'explosion')
+    this.scene.anims.create({
+      key: 'explosion',
+      frames: this.scene.anims.generateFrameNumbers('explosion', { start: 1, end: 7 }),
+      hideOnComplete: true,
+      frameRate: 20
+    })
+    this.explosion.setVisible(false)
+
     this.shot = this.scene.add.sprite(10, 10, 'shot')
     this.scene.anims.create({
       key: 'shot',
@@ -117,6 +126,10 @@ export default class Tank extends Phaser.GameObjects.Sprite {
   }
 
   explode() {
+    this.explosion.setPosition(this.x, this.y)
+    this.explosion.play('explosion')
+    this.explosion.setVisible(true)
+
     this.barrel.destroy()
     this.destroy()
   }
