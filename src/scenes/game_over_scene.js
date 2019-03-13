@@ -21,7 +21,7 @@ export default class GameOverScene extends Phaser.Scene {
     this.add.bitmapText(20, 200, 'font', 'press enter to restart match', 11)
 
     this.input.keyboard.on('keydown_ENTER', event => {
-      this.scene.start('TestGameScene')
+      this.scene.start('GameplayScene')
     })
   }
 

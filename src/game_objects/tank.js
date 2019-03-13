@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-import Bullet from './bullet'
+import Bullet from '@game_objects/bullet'
 
 
 const invertAngle = (angle) => {
@@ -17,30 +17,29 @@ export default class Tank extends Phaser.GameObjects.Sprite {
 
     this.client = client
     this.power = 0
-    this.initImage()
+    this.maxPower = 200
+
+    this.init()
     this.scene.add.existing(this)
     this.body.setCollideWorldBounds(true)
 
-    this.explosion = this.scene.add.sprite(10, 10, 'explosion')
-    this.scene.anims.create({
-      key: 'explosion',
-      frames: this.scene.anims.generateFrameNumbers('explosion', { start: 1, end: 7 }),
-      hideOnComplete: true,
-      frameRate: 20
-    })
-    this.explosion.setVisible(false)
-
-    this.shot = this.scene.add.sprite(10, 10, 'shot')
-    this.scene.anims.create({
-      key: 'shot',
-      frames: this.scene.anims.generateFrameNumbers('shot', { start: 1, end: 4 }),
-      hideOnComplete: true,
-      frameRate: 20
-    })
-    this.shot.setVisible(false)
+    this.explosion = this.initAnimation('explosion', 7)
+    this.shot = this.initAnimation('shot', 4)
   }
 
-  initImage() {
+  initAnimation(key, nFrames) {
+    const animatedSprite = this.scene.add.sprite(key)
+    this.scene.anims.create({
+      key,
+      frames: this.scene.anims.generateFrameNumbers(key, { start: 1, end: nFrames }),
+      hideOnComplete: true,
+      frameRate: 20
+    })
+    animatedSprite.setVisible(false)
+    return animatedSprite
+  }
+
+  init() {
     this.setOrigin(0.5, 0.5)
 
     this.direction = 1
@@ -76,38 +75,36 @@ export default class Tank extends Phaser.GameObjects.Sprite {
       if (this.client) {
         this.handleInput()
       }
-    } else {
-      this.barrel.destroy()
-      this.destroy()
     }
   }
 
   handleInput() {
-    // FIXME: mostly works, but can cause tank to appear flipped incorrectly
     let velocity = 0
+    let dirty = false
+
     if (this.cursors.space.isDown) {
-      if (this.power <= 200) {
+      if (this.power <= this.maxPower) {
         this.power++
         this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(this.power)
       }
     }
 
     if (this.cursors.left.isDown) {
-      this.client.trackMove(this.x, this.y, -60, this.barrel.rotation)
+      dirty = true
       velocity = -60
 
       if (!this.flipX) {
         this.barrel.rotation = invertAngle(this.barrel.rotation)
+        this.setFlipX(true)
       }
-      this.setFlipX(true)
     } else if (this.cursors.right.isDown) {
-      this.client.trackMove(this.x, this.y, 60, this.barrel.rotation)
+      dirty = true
       velocity = 60
 
       if (this.flipX) {
         this.barrel.rotation = invertAngle(this.barrel.rotation)
+        this.setFlipX(false)
       }
-      this.setFlipX(false)
     } else {
       velocity = 0
     }
@@ -115,13 +112,19 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     this.body.setVelocityX(velocity)
 
     if (this.cursors.up.isDown) {
-      this.client.trackMove(this.x, this.y, velocity, this.barrel.rotation)
+      dirty = true
+      velocity = 0.001 * this.flipX ? -1 : 1
       this.barrel.angle += this.flipX ? 1 : -1
     }
 
     if (this.cursors.down.isDown) {
-      this.client.trackMove(this.x, this.y, velocity, this.barrel.rotation)
+      dirty = true
+      velocity = 0.001 * this.flipX ? -1 : 1
       this.barrel.angle += this.flipX ? -1 : 1
+    }
+
+    if (dirty) {
+      this.client.trackMove(this.x, this.y, velocity, this.barrel.rotation)
     }
   }
 

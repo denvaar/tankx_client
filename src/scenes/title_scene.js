@@ -1,8 +1,8 @@
 import Phaser from 'phaser'
 
-import PlayerClient from './../player_client'
-import { clientHost } from '../config'
-import generateGameName from '../generate_game_name'
+import PlayerClient from '@utils/player_client'
+import { clientHost } from '@utils/config'
+import generateGameName from '@utils/generate_game_name'
 
 const IGNORE_KEYS = [
   'Enter',
@@ -66,7 +66,6 @@ export default class TitleScene extends Phaser.Scene {
 
     if (this.playerCount >= 1) {
       // this client is the second player
-      console.log('you are player 2')
       const playerOne = players[0]
       this.playerNameDisplay = this.add.bitmapText(30, 200, 'font', playerOne.id, 9)
       this.playerStatusDisplay = this.add.bitmapText(30, 250, 'font', 'ready', 9)
@@ -74,7 +73,6 @@ export default class TitleScene extends Phaser.Scene {
       this.collectPlayerName(this.playerTwoStatusDisplay)
     } else {
       // this client is the first player
-      console.log('you are player 1')
       this.playerNameDisplay = this.add.bitmapText(30, 200, 'font', 'Name: _', 9)
       this.playerStatusDisplay = this.add.bitmapText(30, 250, 'font', 'Press Enter when ready ...', 9)
       this.playerTwoStatusDisplay = this.add.bitmapText(300, 200, 'font', 'Waiting ...', 9)
@@ -109,8 +107,6 @@ export default class TitleScene extends Phaser.Scene {
 
   onAddPlayer({ player_info }) {
     // I hate this logic
-    console.log('onAddPlayer', player_info)
-    console.log('players', this.playerCount)
     this.players.push(player_info)
 
     if (this.playerCount === 0) {
@@ -124,8 +120,7 @@ export default class TitleScene extends Phaser.Scene {
 
     this.playerCount++
     if (this.playerCount === 2) {
-      console.log('start game!')
-      this.scene.start('TestGameScene', {
+      this.scene.start('GameplayScene', {
         client: this.client,
         player: this.players.find(p => p.id === this.playerName),
         opponent: this.players.find(p => p.id !== this.playerName) // hacky
