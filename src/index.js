@@ -1,12 +1,10 @@
 import Phaser from 'phaser'
 
-import { debug, gameWidth, gameHeight } from './config'
-import GameOverScene from './scenes/game_over_scene'
-import LiveGameScene from './live_game_scene'
-import PlayerInfoScene from './player_info_scene'
-import TestGameScene from './test_game_scene'
-
-import TitleScene from './scenes/title_scene'
+import { debug, gameWidth, gameHeight } from '@utils/config'
+import GameOverScene from '@scenes/game_over_scene'
+import PlayerInfoScene from '@scenes/player_info_scene'
+import GameplayScene from '@scenes/gameplay_scene'
+import TitleScene from '@scenes/title_scene'
 
 const config = {
   type: Phaser.CANVAS,
@@ -15,7 +13,7 @@ const config = {
   parent: 'game-container',
   resolution: window.devicePixelRatio,
   pixelArt: true,
-  scene: [TitleScene, PlayerInfoScene, TestGameScene, GameOverScene],
+  scene: [TitleScene, PlayerInfoScene, GameplayScene, GameOverScene],
   physics: {
     default: 'arcade',
     arcade: {

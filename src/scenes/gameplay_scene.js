@@ -1,15 +1,15 @@
 import Phaser from 'phaser'
 
-import PlayerInfoScene from './player_info_scene'
-import Bullet from './bullet'
-import PlayerClient from './player_client'
-import Tank from './tank'
-import { gameWidth, gameHeight } from './config'
+import PlayerInfoScene from '@scenes/player_info_scene'
+import Bullet from '@game_objects/bullet'
+import PlayerClient from '@utils/player_client'
+import Tank from '@game_objects/tank'
+import { gameWidth, gameHeight } from '@utils/config'
 
 
-export default class TestGameScene extends Phaser.Scene {
+export default class GameplayScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'TestGameScene', active: false })
+    super({ key: 'GameplayScene', active: false })
   }
 
   init(data) {
