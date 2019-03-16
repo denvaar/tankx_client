@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 import PlayerClient from '@utils/player_client'
-import { clientHost } from '@utils/config'
+import { clientHost, gameWidth } from '@utils/config'
 import generateGameName from '@utils/generate_game_name'
 
 const IGNORE_KEYS = [
@@ -16,21 +16,33 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   init() {
+    this.playerName = ""
+    this.readyToPlay = false
+
+    this.initCopyLink()
+    this.initPlayerClient()
+  }
+
+  initCopyLink() {
     const urlParams = new URLSearchParams(window.location.search)
     this.gameName = urlParams.get('game_id')
-    this.playerName = ""
 
     if (!this.gameName) {
+      const gameNameInput = document.getElementById('game-name')
+      const copyButton = document.getElementById('copy-btn')
+
       this.gameName = generateGameName()
-      document.getElementById('game-name').value = `https://${clientHost}?game_id=${this.gameName}`
-      document.getElementById('copy-btn').addEventListener('click', (event) => {
-        const copyText = document.getElementById('game-name')
-        copyText.select()
+
+      gameNameInput.value = `https://${clientHost}?game_id=${this.gameName}`
+      copyButton.addEventListener('click', (event) => {
+        gameNameInput.select()
         document.execCommand('copy')
-        window.alert('Copied:' + copyText.value)
+        window.alert('Copied:' + gameNameInput.value)
       })
     }
+  }
 
+  initPlayerClient() {
     this.client = new PlayerClient({
       gameName: this.gameName,
       callbacks: {
@@ -38,7 +50,6 @@ export default class TitleScene extends Phaser.Scene {
         addPlayer: this.onAddPlayer.bind(this)
       }
     })
-
   }
 
   preload() {
@@ -50,81 +61,103 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   create() {
-    this.client.listPlayers()
-  }
-
-  update() {
-  }
-
-  onListPlayers({ players }) {
     this.add.bitmapText(200, 100, 'font', 'Tanks', 15)
     this.add.bitmapText(30, 170, 'font', 'Player One', 12)
     this.add.bitmapText(300, 170, 'font', 'Player Two', 12)
 
-    this.playerCount = players.length
-    this.players = players
+    this.playerNameDisplay = {}
+    this.setPlayerNameDisplay('waiting...', 1)
+    this.setPlayerNameDisplay('waiting...', 2)
+    this.nameEntryDisplay = this.add.bitmapText(200, 250, 'font', 'Name: _', 12)
 
-    if (this.playerCount >= 1) {
-      // this client is the second player
-      const playerOne = players[0]
-      this.playerNameDisplay = this.add.bitmapText(30, 200, 'font', playerOne.id, 9)
-      this.playerStatusDisplay = this.add.bitmapText(30, 250, 'font', 'ready', 9)
-      this.playerTwoStatusDisplay = this.add.bitmapText(300, 200, 'font', 'Press Enter when ready ...', 9)
-      this.collectPlayerName(this.playerTwoStatusDisplay)
+    this.collectPlayerName()
+    this.client.listPlayers()
+  }
+
+  setPlayerNameDisplay(text, playerIndex) {
+    const fontSize = 9
+    const location = ({
+      1: {x: 30, y: 200},
+      2: {x: 300, y: 200}
+    })[playerIndex]
+
+    if (this.playerNameDisplay[playerIndex]) {
+      this.playerNameDisplay[playerIndex].setText(text)
     } else {
-      // this client is the first player
-      this.playerNameDisplay = this.add.bitmapText(30, 200, 'font', 'Name: _', 9)
-      this.playerStatusDisplay = this.add.bitmapText(30, 250, 'font', 'Press Enter when ready ...', 9)
-      this.playerTwoStatusDisplay = this.add.bitmapText(300, 200, 'font', 'Waiting ...', 9)
-      this.collectPlayerName(this.playerNameDisplay)
+      this.playerNameDisplay[playerIndex] = this.add.bitmapText(
+        location.x,
+        location.y,
+        'font',
+        text,
+        fontSize
+      )
     }
   }
 
-  collectPlayerName(displayTarget) {
+  /* shared */
+  onListPlayers({ players }) {
+    players.forEach(player => {
+      this.setPlayerNameDisplay(player.id, player.player_index)
+    })
+  }
+
+  collectPlayerName() {
     this.input.keyboard.on('keydown', event => {
-      if (IGNORE_KEYS.includes(event.key)) {
-        return
-      }
+      if (!this.readyToPlay) {
+        if (IGNORE_KEYS.includes(event.key)) {
+          return
+        }
 
-      if (event.key === 'Backspace') {
-        this.playerName = this.playerName.slice(
-          0,
-          this.playerName.length - 1
+        if (event.key === 'Backspace') {
+          this.playerName = this.playerName.slice(
+            0,
+            this.playerName.length - 1
+          )
+        } else {
+          this.playerName = this.playerName.concat(event.key)
+        }
+
+        this.nameEntryDisplay.setText(
+          'Name: ' + this.playerName + '_'
         )
-      } else {
-        this.playerName = this.playerName.concat(event.key)
-      }
 
-      displayTarget.setText(
-        'Name: ' + this.playerName + '_'
-      )
+        this.nameEntryDisplay.setPosition(
+          (gameWidth / 2) - (this.nameEntryDisplay.width / 2),
+          250
+        )
+      }
     })
 
     this.input.keyboard.on('keydown_ENTER', event => {
-      this.client.addPlayer(this.playerName)
+      if (!this.readyToPlay) {
+        this.client.addPlayer(this.playerName)
+        this.nameEntryDisplay.setText('ready!')
+        this.nameEntryDisplay.setPosition(
+          (gameWidth / 2) - (this.nameEntryDisplay.width / 2),
+          250
+        )
+        this.readyToPlay = true
+      }
     })
   }
 
-  onAddPlayer({ player_info }) {
-    // I hate this logic
-    this.players.push(player_info)
+  /* shared */
+  onAddPlayer({ players }) {
+    players.forEach(player => {
+      this.setPlayerNameDisplay(player.id, player.player_index)
+    })
 
-    if (this.playerCount === 0) {
-      // player one
-      this.playerStatusDisplay.setText('ready')
-      this.playerNameDisplay.setText(player_info.id)
-    } else if (this.playerCount === 1) {
-      // player two
-      this.playerTwoStatusDisplay.setText(player_info.id)
-    }
+    if (players.length === 2) {
+      const player = players.find(p => p.id === this.playerName)
+      const opponent = players.find(p => p.id !== this.playerName)
 
-    this.playerCount++
-    if (this.playerCount === 2) {
-      this.scene.start('GameplayScene', {
-        client: this.client,
-        player: this.players.find(p => p.id === this.playerName),
-        opponent: this.players.find(p => p.id !== this.playerName) // hacky
-      })
+      setTimeout(() => {
+        this.scene.start('GameplayScene', {
+          client: this.client,
+          player,
+          opponent
+        })
+      }, 3000)
     }
   }
 }
