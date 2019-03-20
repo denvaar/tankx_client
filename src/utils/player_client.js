@@ -55,8 +55,8 @@ class PlayerClient {
     this.channel.push("move", {x, y, velocity, barrel_rotation: barrelRotation})
   }
 
-  fire(rotation, power, velocity) {
-    this.channel.push("fire", {rotation, power, velocity})
+  fire(rotation, power) {
+    this.channel.push("fire", {rotation, power})
   }
 
   explode(playerId) {

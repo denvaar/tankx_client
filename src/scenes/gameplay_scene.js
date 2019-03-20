@@ -115,7 +115,7 @@ export default class GameplayScene extends Phaser.Scene {
   }
 
   /* shared */
-  fireShot({id, rotation, power, velocity}) {
+  fireShot({id, rotation, power}) {
     const player = this.otherPlayers[id] || this.player
     player.fireShot({rotation, power})
   }
