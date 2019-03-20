@@ -63,9 +63,9 @@ export default class Tank extends Phaser.GameObjects.Sprite {
         Phaser.Input.Keyboard.KeyCodes.DOWN
       );
       this.scene.input.keyboard.on('keyup-SPACE',  () => {
-        this.client.fire(this.barrel.rotation, this.power * 3, 0)
+        this.client.fire(this.barrel.rotation, this.power * 3)
         this.power = 0
-        this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(0)
+        this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(this.power)
       }, this)
     }
   }
