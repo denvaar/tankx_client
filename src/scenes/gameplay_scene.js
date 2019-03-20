@@ -114,20 +114,9 @@ export default class GameplayScene extends Phaser.Scene {
     delete this.otherPlayers[id]
   }
 
+  /* shared */
   fireShot({id, rotation, power, velocity}) {
-    const player = this.otherPlayers[id]
-
-    let offset = new Phaser.Geom.Point(player.barrel.x + 20, player.barrel.y)
-    Phaser.Math.RotateAround(offset, player.barrel.x, player.barrel.y, player.barrel.rotation)
-    const bullet = new Bullet({
-      scene: this,
-      x: offset.x,
-      y: offset.y
-    })
-    player.shot.setPosition(offset.x, offset.y)
-    player.shot.play('shot')
-    player.shot.setVisible(true)
-    this.cameras.main.shake(20, 0.005)
-    this.physics.velocityFromRotation(player.barrel.rotation, power, bullet.body.velocity)
+    const player = this.otherPlayers[id] || this.player
+    player.fireShot({rotation, power})
   }
 }
