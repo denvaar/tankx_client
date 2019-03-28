@@ -27,6 +27,14 @@ export default class PlayerInfoScene extends Phaser.Scene {
       8
     )
 
+    this.timerTurnDisplay = this.add.bitmapText(
+      70,
+      15,
+      'font',
+      '',
+      8
+    )
+
     this.firePowerBar = this.add.graphics()
     this.renderPowerBar(0)
   }
@@ -47,5 +55,22 @@ export default class PlayerInfoScene extends Phaser.Scene {
 
   updateFirePower(firePower) {
     this.renderPowerBar(firePower)
+  }
+
+  toggleActiveDisplay(disabled) {
+    if (this.countdownId) {
+      clearInterval(this.countdownId)
+      this.countdownId = null
+    }
+
+    if (!disabled) {
+      this.elapsedTime = 15
+      this.countdownId = setInterval(() => {
+        this.elapsedTime--
+        this.timerTurnDisplay.setText(`Your turn (${this.elapsedTime})`)
+      }, 1000)
+    } else {
+      this.timerTurnDisplay.setText('--')
+    }
   }
 }

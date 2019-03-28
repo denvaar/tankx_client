@@ -20,6 +20,7 @@ export default class GameplayScene extends Phaser.Scene {
     // hacky...
     this.client.callbacks = {
       ...this.client.callbacks,
+      switchTurn: this.onSwitchTurn.bind(this),
       movePlayer: this.movePlayer.bind(this),
       fireShot: this.fireShot.bind(this),
       killPlayer: this.killPlayer.bind(this)
@@ -61,6 +62,8 @@ export default class GameplayScene extends Phaser.Scene {
       this
     )
     this.otherPlayers[this.opponent.id] = otherPlayer
+
+    this.client.switchTurn()
   }
 
   update() {
@@ -96,13 +99,17 @@ export default class GameplayScene extends Phaser.Scene {
       delete this.otherPlayers[id]
       setTimeout(() => {
         this.scene.stop('PlayerInfoScene')
-        this.scene.start('GameOverScene', {gameResult: 'win', player: id})
+        this.scene.start('GameOverScene', {gameResult: 'win', player: id, client: this.client})
       }, 1000)
     } else {
       this.player.explode()
       setTimeout(() => {
         this.scene.stop('PlayerInfoScene')
-        this.scene.start('GameOverScene', {gameResult: 'loose', player: Object.keys(this.otherPlayers)[0]})
+        this.scene.start('GameOverScene', {
+          gameResult: 'loose',
+          player: Object.keys(this.otherPlayers)[0],
+          client: this.client
+        })
       }, 1000)
     }
   }
@@ -118,5 +125,20 @@ export default class GameplayScene extends Phaser.Scene {
   fireShot({id, rotation, power}) {
     const player = this.otherPlayers[id] || this.player
     player.fireShot({rotation, power})
+  }
+
+  /* shared */
+  onSwitchTurn(playerName) {
+    const player = this.otherPlayers[playerName] || this.player
+    this.player.toggleInput(this.player !== player)
+
+    // This is a bug, so using pan as a workaround
+    // this.cameras.main.startFollow(player, true, 0.1, 0.1)
+    this.cameras.main.stopFollow()
+    const durration = 1000
+    this.cameras.main.pan(player.x, null, durration)
+    setTimeout(() => {
+      this.cameras.main.startFollow(player)
+    }, durration)
   }
 }

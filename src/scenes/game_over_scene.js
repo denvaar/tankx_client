@@ -6,7 +6,13 @@ export default class GameOverScene extends Phaser.Scene {
     super({ key: 'GameOverScene', active: false })
   }
 
-  init({ gameResult, player }) {
+  init({ gameResult, player, client}) {
+    this.client = client
+    this.client.callbacks = {
+      ...this.client.callbacks,
+      restartGame: this.onGameRestart.bind(this)
+    }
+
     if (gameResult === 'win') {
       this.message = `You defeated ${player}!`
     } else {
@@ -21,9 +27,13 @@ export default class GameOverScene extends Phaser.Scene {
     this.add.bitmapText(20, 200, 'font', 'press enter to restart match', 11)
 
     this.input.keyboard.on('keydown_ENTER', event => {
-      this.scene.start('GameplayScene')
+      this.client.restartGame()
     })
   }
 
   update() { }
+
+  onGameRestart() {
+    this.scene.start('GameplayScene')
+  }
 }
