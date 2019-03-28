@@ -63,7 +63,10 @@ export default class Tank extends Phaser.GameObjects.Sprite {
         Phaser.Input.Keyboard.KeyCodes.DOWN
       );
       this.scene.input.keyboard.on('keyup-SPACE',  () => {
-        this.client.fire(this.barrel.rotation, this.power * 3)
+        if (this.disableInput) {
+          return
+        }
+        this.client.fire(this.barrel.rotation, this.power * 3, 0)
         this.power = 0
         this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(this.power)
       }, this)
@@ -72,6 +75,11 @@ export default class Tank extends Phaser.GameObjects.Sprite {
 
   update() {
     if (this.active) {
+      if (this.disableInput && this.power > 0) {
+        this.client.fire(this.barrel.rotation, this.power * 3, 0)
+        this.power = 0
+        this.scene.scene.manager.getScene('PlayerInfoScene').updateFirePower(0)
+      }
       this.barrel.x = this.x + (2 * this.flipX ? -1 : 1)
       this.barrel.y = this.y - 3
       if (this.client) {
@@ -81,6 +89,11 @@ export default class Tank extends Phaser.GameObjects.Sprite {
   }
 
   handleInput() {
+    if (this.disableInput) {
+      this.body.setVelocityX(0)
+      return
+    }
+
     let velocity = 0
     let dirty = false
 
@@ -146,13 +159,28 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     const bullet = new Bullet({
       scene: this.scene,
       x: offset.x,
-      y: offset.y
+      y: offset.y,
+      onDestroy: (bullet) => {
+        bullet.destroy()
+        if (!this.disableInput) {
+          this.scene.cameras.main.stopFollow()
+          if (this.client) {
+            this.client.switchTurn()
+          }
+        }
+      }
     })
     this.shot.setPosition(offset.x, offset.y)
     this.shot.play('shot')
     this.shot.setVisible(true)
     this.bulletGroup.add(bullet)
     this.scene.cameras.main.shake(20, 0.005)
+    this.scene.cameras.main.startFollow(bullet)
     this.scene.physics.velocityFromRotation(rotation, power, bullet.body.velocity)
+  }
+
+  toggleInput(disabled) {
+    this.disableInput = disabled
+    this.scene.scene.manager.getScene('PlayerInfoScene').toggleActiveDisplay(disabled)
   }
 }

@@ -1,5 +1,7 @@
 import Phaser from 'phaser'
 
+import { gameHeight } from '@utils/config'
+
 export default class Bullet extends Phaser.GameObjects.Graphics {
   constructor(params) {
     super(params.scene, params)
@@ -12,5 +14,13 @@ export default class Bullet extends Phaser.GameObjects.Graphics {
     this.body.setOffset(-2, -2)
 
     this.scene.add.existing(this)
+
+    this.onDestroy = params.onDestroy
+  }
+
+  update() {
+    if (this.y > gameHeight) {
+      this.onDestroy(this)
+    }
   }
 }

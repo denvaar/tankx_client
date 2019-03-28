@@ -41,6 +41,14 @@ class PlayerClient {
     this.channel.on("explode", payload => {
       this.callbacks.killPlayer(payload)
     })
+
+    this.channel.on("turn_time_up", payload => {
+      this.callbacks.switchTurn(payload.turn)
+    })
+
+    this.channel.on("restart_game", payload => {
+      this.callbacks.restartGame(payload)
+    })
   }
 
   listPlayers() {
@@ -61,6 +69,14 @@ class PlayerClient {
 
   explode(playerId) {
     this.channel.push("explode", {player_id: playerId})
+  }
+
+  switchTurn() {
+    this.channel.push("switch_player_turn", {})
+  }
+
+  restartGame() {
+    this.channel.push("restart_game", {})
   }
 }
 
