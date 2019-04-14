@@ -28,12 +28,16 @@ export default class GameplayScene extends Phaser.Scene {
 
     this.scene.launch('PlayerInfoScene', {playerName: this.player.id})
     this.cameras.main.roundPixels = true
-    this.cameras.main.setBounds(0, 0, gameWidth, gameHeight)
-    this.cameras.main.setBackgroundColor('rgba(105, 105, 105, 1)')
+    this.cameras.main.setBounds(0, 0, gameWidth * 4, gameHeight)
+    this.physics.world.setBounds(0, 0, gameWidth * 4, gameHeight)
+    this.cameras.main.setBackgroundColor('rgba(55, 60, 84, 1)')
   }
 
   preload() {
     this.load.image('barrel', '../assets/barrel.png')
+    this.load.image('mountains-back', '../assets/mountains1.png')
+    this.load.image('mountains-mid', '../assets/mountains2.png')
+    this.load.image('mountains-front', '../assets/mountains3.png')
     this.load.spritesheet('tank', '../assets/blue-tank.png', { frameWidth: 32, frameHeight: 20 })
     this.load.spritesheet('shot', '../assets/shot.png', { frameWidth: 30, frameHeight: 30 })
     this.load.spritesheet('explosion', '../assets/explosion.png', { frameWidth: 32, frameHeight: 30 })
@@ -41,6 +45,19 @@ export default class GameplayScene extends Phaser.Scene {
 
   create() {
     this.scene.bringToTop('PlayerInfoScene')
+
+    this.add.tileSprite(
+      0, gameHeight, 0, 0,
+      'mountains-back'
+    ).setScrollFactor(0.2)
+    this.add.tileSprite(
+      0, gameHeight, 0, 0,
+      'mountains-mid'
+    ).setScrollFactor(0.5)
+    this.add.tileSprite(
+      0, gameHeight + 100, 0, 0,
+      'mountains-front'
+    ).setScrollFactor(0.8)
 
     this.anims.create({
       key: 'horiz',

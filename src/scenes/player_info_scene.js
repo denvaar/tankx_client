@@ -28,8 +28,8 @@ export default class PlayerInfoScene extends Phaser.Scene {
     )
 
     this.timerTurnDisplay = this.add.bitmapText(
-      70,
       15,
+      50,
       'font',
       '',
       8

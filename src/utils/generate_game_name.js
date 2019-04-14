@@ -48,8 +48,7 @@ const generateGameName = () => {
   const fnId = Math.floor(Math.random() * firstNameMax)
   const lnId = Math.floor(Math.random() * lastNameMax)
 
-  //return `${firstNames[fnId]}-${lastNames[lnId]}`
-  return "black-mirror"
+  return `${firstNames[fnId]}-${lastNames[lnId]}`
 }
 
 export default generateGameName
